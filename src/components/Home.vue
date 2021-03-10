@@ -3,10 +3,10 @@
     <h1>画像作成ページ</h1>
     <div><button v-on:click="onClickTweetButton">{{profile.twitterDisplayName}}(@{{profile.twitterScreenName}})でツイート</button></div>
     <hr>
-    <MakeingImageForm imageFormId="0" @itemValues="onChangeEmitItemValues" @onSubmit="onSubmit" :imgUrls="imgUrls" />
-    <MakeingImageForm imageFormId="1" @itemValues="onChangeEmitItemValues" @onSubmit="onSubmit" :imgUrls="imgUrls" />
-    <MakeingImageForm imageFormId="2" @itemValues="onChangeEmitItemValues" @onSubmit="onSubmit" :imgUrls="imgUrls" />
-    <MakeingImageForm imageFormId="3" @itemValues="onChangeEmitItemValues" @onSubmit="onSubmit" :imgUrls="imgUrls" />
+    <MakeingImageForm imageFormId="0" @onChangeImageUrl="onChangeImageUrl" />
+    <MakeingImageForm imageFormId="1" @onChangeImageUrl="onChangeImageUrl" />
+    <MakeingImageForm imageFormId="2" @onChangeImageUrl="onChangeImageUrl" />
+    <MakeingImageForm imageFormId="3" @onChangeImageUrl="onChangeImageUrl" />
   </div>
 </template>
 
@@ -25,67 +25,13 @@ export default {
   },
   data: function () {
     return {
-      items: {},
       MU: null,
-      imgUrls: []
+      imgUrls: {}
     }
   },
   methods: {
-    onChangeEmitItemValues(values) {
-      this.items[values.imageFormId] = values
-    },
-    postGenImgAPI(postObj) {
-      return axios.post('https://tsumugu.tech/gen_shareimg/get.php', postObj)
-    },
-    onSubmit(formId) {
-      var e = this.items[formId]
-      // 指定のformIdの要素の存在確認
-      if (!this.MU.isAllValueNotEmpty([e])) {
-        alert("入力してください")
-        return false
-      }
-      var title = e.title
-      // titleのnullチェック
-      if (!this.MU.isAllValueNotEmpty([title])) {
-        alert("タイトルを入力してください")
-        return false
-      }
-      var items = Object.keys(e.items).map(l=>{
-        var f = e.items[l]
-        if (this.MU.isAllValueNotEmpty([f.itemName, f.itemThumbnail])) {
-          return {
-            "title": f.itemName,
-            "description": f.ItemDescription,
-            "thumbnail": f.itemThumbnail
-          }
-        }
-      }).filter(Boolean)
-      // タイトルとサムネが入力されていない場合mapで弾かれるので、処理前後で配列の要素数を比較することで正しく入力されているかを確認できる
-      if (Object.keys(e.items).length != items.length) {
-        alert("アイテムのタイトルと画像は必須項目です")
-        return false
-      }
-      var resItems = {}
-      resItems["top"] = items[0]
-      items.shift()
-      resItems["other"] = items
-
-      var postObj = {}
-      postObj["title"] = title
-      postObj["items"] = resItems
-      this.postGenImgAPI(postObj).then(response=>{
-        // すでに画像があったら削除する
-        this.imgUrls = this.imgUrls.map(e=>{
-          if (Object.keys(e)[0] != formId) {
-            return e
-          }
-        }).filter(Boolean)
-
-        this.imgUrls.push({[formId]: response.data})
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    onChangeImageUrl(value) {
+      this.imgUrls[value.imageFormId] = value.imgUrl
     },
     onClickTweetButton() {
       var imgUrls = this.imgUrls.map(e=>{

@@ -1,11 +1,32 @@
 <template>
   <div class="forms">
-    <input type="text" v-model="itemName">
-    <!--<input type="text" v-model="itemThumbnail">-->
-    <img :src="itemThumbnail" style="width: 500px;" v-show="itemThumbnail!=null">
-    <p v-show="imgUploadProportion!=null">{{imgUploadProportion}}</p>
-    <input type="file" name="file" ref="file"><button v-on:click="onClickUploadImg">画像をアップロード</button>
-    <textarea v-model="itemDescription"></textarea>
+    <div class="forms__area">
+      <h2>{{title}}</h2>
+    </div>
+    <div class="forms__area">
+      <h3>title</h3>
+      <input type="text" v-model="itemName">
+    </div>
+    <div class="forms__area">
+      <h3>Image</h3>
+      <div v-show="itemThumbnail!=null">
+        <img :src="itemThumbnail" style="max-width: 300px;">
+      </div>
+      <div v-show="imgUploadProportion!=null">
+        <p>{{imgUploadProportion}}</p>
+      </div>
+      <div>
+        <div><input type="file" name="file" ref="file"></div>
+        <div><button v-on:click="onClickUploadImg">画像をアップロード</button></div>
+      </div>
+    </div>
+    <div class="forms__area" v-show="isDispDiscription">
+      <h3>Description</h3>
+      <textarea v-model="itemDescription"></textarea>
+    </div>
+    <div class="forms__area">
+      <button v-on:click="onChangeValue">このアイテムの内容を確定(編集可能)</button>
+    </div>
   </div>
 </template>
 
@@ -16,25 +37,17 @@ import ProgressPromise from 'progress-promise'
 export default {
   name: 'Forms',
   props: {
-    formId: null
+    formId: null,
+    title: null,
+    isDispDiscription: false,
+    propsItems: null
   },
   data: function () {
     return {
       itemName: null,
-      itemThumbnail: null,
+      itemThumbnail: "https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png",
       itemDescription: null,
       imgUploadProportion: null
-    }
-  },
-  watch: {
-    itemName() {
-      this.onChangeValue()
-    },
-    itemThumbnail() {
-      this.onChangeValue()
-    },
-    itemDescription() {
-      this.onChangeValue()
     }
   },
   methods: {
@@ -43,7 +56,8 @@ export default {
         "formId": this.formId,
         "itemName": this.itemName,
         "itemThumbnail": this.itemThumbnail,
-        "ItemDescription": this.itemDescription
+        "ItemDescription": this.itemDescription,
+        "isEdited": (this.propsItems!=null)
       })
     },
     onClickUploadImg() {
@@ -63,7 +77,6 @@ export default {
       })
       .then(response=>{
         this.imgUploadProportion = null
-        console.log(response.data)
         if (response.data.error!=undefined) {
           alert("画像のアップロードに失敗しました")
         } else {
@@ -75,30 +88,30 @@ export default {
         console.log(error)
         alert("画像のアップロードに失敗しました")
       })
-      /*
-      console.log(params)
-      axios.post("https://tsumugu.tech/gen_shareimg/upload.php", params)
-      .then(response=>{
-        if (response.data.error!=undefined) {
-          console.log(response.data.error)
-          alert("画像のアップロードに失敗しました")
-        } else {
-          console.log(response.data)
-          this.itemThumbnail = response.data.imgurl
-        }
-      })
-      .catch(error=>{
-        console.log(error)
-        alert("画像のアップロードに失敗しました")
-      })
-      */
     }
   },
   mounted() {
-    
+    if (this.propsItems != null) {
+      this.itemDescription = this.propsItems.ItemDescription
+      this.itemName = this.propsItems.itemName
+      this.itemThumbnail = this.propsItems.itemThumbnail
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
+h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+.forms {
+  margin-top: 5px;
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 0.25rem;
+  &__area {
+    margin-top: 10px;
+  }
+}
 </style>

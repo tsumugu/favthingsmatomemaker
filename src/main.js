@@ -3,6 +3,8 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 
+import VModal from 'vue-js-modal'
+
 import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/auth";
@@ -22,6 +24,8 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 Vue.config.productionTip = false
+
+Vue.use(VModal);
 
 new Vue({
   router,
