@@ -1,0 +1,23 @@
+button {
+  padding: 5px;
+  border: 1px solid gray;
+  border-radius: 0.25rem;
+  color: black;
+  background-color: rgba(128, 128, 128, 0.2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(128, 128, 128, 0.3);
+  }
+  &.active {
+    border: 1px solid blue;
+    color: blue;
+    background-color: rgba(0, 0, 255, 0.2);
+  }
+  &.active:hover {
+    background-color: rgba(0, 0, 255, 0.3);
+  }
+  &.twitter {
+    background-color: blue;
+  }
+}

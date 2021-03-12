@@ -46,8 +46,14 @@ export default {
     return {
       itemName: null,
       itemThumbnail: "https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png",
+      //itemThumbnail: null,
       itemDescription: null,
       imgUploadProportion: null
+    }
+  },
+  watch: {
+    propsItems() {
+      this.loadPropsItems()
     }
   },
   methods: {
@@ -88,14 +94,17 @@ export default {
         console.log(error)
         alert("画像のアップロードに失敗しました")
       })
+    },
+    loadPropsItems() {
+      if (this.propsItems != null) {
+        this.itemDescription = this.propsItems.ItemDescription
+        this.itemName = this.propsItems.itemName
+        this.itemThumbnail = this.propsItems.itemThumbnail
+      }
     }
   },
   mounted() {
-    if (this.propsItems != null) {
-      this.itemDescription = this.propsItems.ItemDescription
-      this.itemName = this.propsItems.itemName
-      this.itemThumbnail = this.propsItems.itemThumbnail
-    }
+    this.loadPropsItems()
   }
 }
 </script>
