@@ -1,23 +1,39 @@
 button {
-  padding: 5px;
-  border: 1px solid gray;
-  border-radius: 0.25rem;
-  color: black;
-  background-color: rgba(128, 128, 128, 0.2);
-  font-size: 1.2rem;
+  margin: 0;
+  padding: 6px 20px;
+  display: inline-block;
+  position: relative;
+  min-width: 80px;
+  text-align: center;
   cursor: pointer;
+  border-radius: 4px;
+  border: 2px solid $accent-color;
+  color: rgba(0, 150, 217, 1);
+  background-color: $editable-hoverbgcolor;
+  font-size: 16px;
+  font-weight: bold;
+  &:disabled {
+    opacity: 0.4;
+  }
+  &:disabled:hover {
+    background-color: $editable-hoverbgcolor;
+  }
   &:hover {
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: $accent-hovercolor;
   }
   &.active {
-    border: 1px solid blue;
-    color: blue;
-    background-color: rgba(0, 0, 255, 0.2);
+    color: $editable-hoverbgcolor;
+    background-color: $accent-color;
   }
   &.active:hover {
-    background-color: rgba(0, 0, 255, 0.3);
+    background-color: $accent-activehovercolor;
   }
   &.twitter {
-    background-color: blue;
+    color: $editable-hoverbgcolor;
+    border: none;
+    background-color: $twitter-color;
+  }
+  &.twitter:hover {
+    background-color: $twitter-hovercolor;
   }
 }

@@ -1,5 +1,7 @@
 <template>
   <div class="MakeingImageForm">
+    <loading :active.sync="isLoading" :can-cancel="false" :is-full-page="true" />
+    <div>最大4枚のうち{{this.imgUrlsCount+1}}枚目を作成中</div>
     <div class="MakeingImageForm__preview__wrapper" v-show="imgUrl==null">
       <div class="MakeingImageForm__preview__wrapper__contents">
         <div class="MakeingImageForm__preview__wrapper__contents__title" ref="clickzone-title" v-on:click="openEditItemModal('title')">
@@ -52,32 +54,24 @@
       </div>
       <div class="MakeingImageForm__preview__wrapper__credit"><img src="https://tsumugu.tech/gen_shareimg/logo.png" style="margin: 0;padding: 0;width: 300px;"></div>
     </div>
-    <!--
-    <div class="MakeingImageForm__previewImage" v-show="imgUrl!=null">
-      <img :src="imgUrl">
-      <div><button v-on:click="()=>{closePreviewModal();openAskDialog();}">これでOK</button></div>
-      <div><button v-on:click="dispPreviewArea()">編集する</button></div>
-    </div>
-    <button v-on:click="$modal.push('previewimage-modal')">テスト</button>
-    -->
     <modal name="previewimage-modal">
       <div class="MakeingImageForm__previewImage">
         <img :src="imgUrl">
-        <div><button v-on:click="dispPreviewArea()">修正する</button><button class="active" v-on:click="()=>{$modal.pop('previewimage-modal');openAskDialog();}">これでOK</button></div>
+        <div style="margin-top: 10px;"><button v-on:click="dispPreviewArea()" style="margin-right: 10px;">修正する</button><button class="active" v-on:click="()=>{$modal.pop('previewimage-modal');openAskDialog();}">これでOK</button></div>
       </div>
     </modal>
     <div v-show="imgUrl==null" class="MakeingImageForm--centerize">
       <div class="MakeingImageForm__editarea" ref="editarea-title" style="display: inline-block;">
         <h2>タイトル</h2>
         <div><input type="text" v-model="matomeTitle"></div>
-        <div><button v-on:click="onChangeEmitItemValues('{\'formId\': \'title\', \'isEdited\': false}')">タイトルを確定(編集可能)</button></div>
+        <div style="margin-top: 5px;"><button v-on:click="onChangeEmitItemValues('{\'formId\': \'title\', \'isEdited\': false}')">タイトルを確定(編集可能)</button></div>
       </div>
-      <Forms style="display:none;" formId="1" title="item ①" isDispDiscription="true" ref="editarea-1" @itemValues="onChangeEmitItemValues" />
-      <Forms style="display:none;" formId="2" title="item ②" ref="editarea-2" @itemValues="onChangeEmitItemValues" />
-      <Forms style="display:none;" formId="3" title="item ③" ref="editarea-3" @itemValues="onChangeEmitItemValues" />
-      <Forms style="display:none;" formId="4" title="item ④" ref="editarea-4" @itemValues="onChangeEmitItemValues" />
-      <div class="MakeingImageForm__editarea" v-show="imgUrl==null">
-        <button v-on:click="onGenImg">画像を生成する</button><button v-on:click="$emit('openPreviewTweetImgModal', null)">ツイートして終了する</button>
+      <Forms class="MakeingImageForm__editarea" style="display:none;" formId="1" title="item ①" isDispDiscription="true" ref="editarea-1" @itemValues="onChangeEmitItemValues" />
+      <Forms class="MakeingImageForm__editarea" style="display:none;" formId="2" title="item ②" ref="editarea-2" @itemValues="onChangeEmitItemValues" />
+      <Forms class="MakeingImageForm__editarea" style="display:none;" formId="3" title="item ③" ref="editarea-3" @itemValues="onChangeEmitItemValues" />
+      <Forms class="MakeingImageForm__editarea" style="display:none;" formId="4" title="item ④" ref="editarea-4" @itemValues="onChangeEmitItemValues" />
+      <div v-show="imgUrl==null" style="margin-top: 10px;">
+        <button style="margin-right: 10px;" v-on:click="onGenImg" v-bind:disabled="isDisableGenImgButton">画像を生成</button><button v-on:click="$emit('openPreviewTweetImgModal', null)" v-bind:disabled="imgUrlsCount<=0">今まで生成した画像をツイートして終了</button>
       </div>
     </div>
     <modal name="edititem-modal">
@@ -104,12 +98,14 @@ import axios from 'axios'
 import html2canvas from 'html2canvas'
 import MyUtil from '@/assets/js/MyUtil.js'
 import Forms from '@/components/Forms.vue'
+
 import '@/assets/style/vue-thin-modal-responsive.css'
 
 export default {
   name: 'MakeingImageForm',
   props: {
-    imageFormId: null
+    imageFormId: null,
+    genedImgUrls: []
   },
   data: function () {
     return {
@@ -121,40 +117,51 @@ export default {
       item: null,
       editItemPropsVal: {
         "formId": null
-      }
+      },
+      imgUrlsCount: 0,
+      nokoriimgCount: 4,
+      isDisableGenImgButton: true,
+      isLoading: false
     }
   },
   components: {
     Forms
   },
-  /*
   watch: {
-    matomeTitle() {
-      this.onChangeValue()
+    genedImgUrls() {
+      if (this.MU.isAllValueNotEmpty([this.genedImgUrls])) {
+        this.imgUrlsCount = this.genedImgUrls.length
+        this.nokoriimgCount = this.nokoriimgCount - this.imgUrlsCount
+      }
     }
   },
-  */
   methods: {
+    whenCancelled() {
+        console.log("User cancelled the loader.")
+      },
     dispPreviewArea() {
       this.imgUrl = null
       this.$modal.pop('previewimage-modal')
     },
     openAskDialog() {
-      // TODO: 枚数表示を実装
-      this.$dialog
-      .confirm('もっと画像を作成しますか？(残りn枚)',{
-        reverse: true,
-        okText: 'いいえ',
-        cancelText: 'はい',
-      })
-      .then(()=>{
-        // 終了してツイートする
+      if (this.nokoriimgCount>0) {
+        this.$dialog
+        .confirm('もっと画像を作成しますか？(残り'+this.nokoriimgCount+'枚)',{
+          reverse: true,
+          okText: 'いいえ',
+          cancelText: 'はい',
+        })
+        .then(()=>{
+          // 終了してツイートする
+          this.$emit('openPreviewTweetImgModal', null)
+        })
+        .catch(()=>{
+          // 画像をもっと作る
+          this.$emit('openNewMakingImageForm', this.imageFormId)
+        })
+      } else {
         this.$emit('openPreviewTweetImgModal', null)
-      })
-      .catch(()=>{
-        // 画像をもっと作る
-        this.$emit('openNewMakingImageForm', this.imageFormId)
-      })
+      }
     },
     openEditItemModal(formId) {
       var val = this.postData[formId]
@@ -201,9 +208,9 @@ export default {
         }
         if (previewElm!=undefined&&editareaElm!=undefined) {
           // プレビュー部分の見た目を変化させる
-          previewElm.classList.add('editableitem')
+          previewElm.classList.add('editableitem', 'animate__animated', 'animate__fadeInUp')
           // 編集画面をfadeout
-          editareaElm.classList.add('animate__animated', 'animate__fadeOutLeft')
+          editareaElm.classList.add('animate__animated', 'animate__fadeOutUp')
           editareaElm.addEventListener('animationend', () => {
             editareaElm.style.display = "none"
             //次の編集画面をfadein
@@ -226,6 +233,9 @@ export default {
       this.item = {
         "title": this.matomeTitle,
         "items": this.postData
+      }
+      if (this.MU.isAllValueNotEmpty([this.matomeTitle]) && Object.keys(this.postData).length>0) {
+        this.isDisableGenImgButton = false
       }
     },
     postGenImgAPI(postObj) {
@@ -271,6 +281,7 @@ export default {
     onGenImg() {
       var postObj = this.convertItemToPostObj(this.item)
       if (postObj) {
+        this.isLoading = true
         this.postGenImgAPI(postObj).then(response=>{
           this.imgUrl = response.data
           this.$emit('onChangeImageUrl', {
@@ -278,16 +289,18 @@ export default {
             "imgUrl": this.imgUrl
           })
           // プレビューダイアログを出す
+          this.isLoading = false
           this.$modal.push('previewimage-modal')
         })
         .catch((error) => {
           console.log(error)
+          this.isLoading = false
         })
       }
     }
   },
   mounted() {
-    this.MU = new MyUtil()
+    this.MU = new MyUtil()      
   }
 }
 </script>
@@ -295,8 +308,11 @@ export default {
 <style scoped lang="scss">
 .MakeingImageForm {
   margin: 0 auto;
-  border: 1px solid red;
+  padding: 40px;
   max-width: 650px;
+  background-color: $app-bgcolor-light;
+  border-radius: 0.25rem;
+  border: 1px solid $border;
   &--centerize {
     display: flex;
     flex-direction: column;
@@ -305,12 +321,16 @@ export default {
   }
   &__preview {
     &__wrapper {
+      margin-bottom: 10px;
       position: relative;
       max-width: 650px;
       height: auto;
       background-image: url('https://tsumugu.tech/gen_shareimg/bg.png');
       background-size: contain;
       background-repeat: no-repeat;
+      border-radius: 0.25rem;
+      border: 1px solid $border;
+      /*font-weight: bold;*/
       &__contents {
         position: absolute;
         top: 0;
@@ -325,7 +345,7 @@ export default {
           left: 0;
           width: 10%;
           height: calc( 100% - 50px );
-          background-color: gray;
+          background-color: $preview-bgcolor;
 
           display: flex;
           flex-direction: column;
@@ -333,7 +353,7 @@ export default {
           align-items: center;
           writing-mode:vertical-rl;
           text-orientation:upright;
-          color: white;
+          color: $preview-textcolor;
           font-size: 1.2rem;
         }
         &__items {
@@ -347,19 +367,20 @@ export default {
             position: absolute;
             top: 0;
             right: 0;
+            z-index: 999;
             width: calc( 100% - 10px );
             height: 50%;
             &__clickzone {
               display: block;
               width: 100%;
               height: 100%;
-              background-color: gray;
+              background-color: $preview-bgcolor;
 
               display: flex;
               flex-direction: column;
               justify-content: center;
               align-items: center;
-              color: white;
+              color: $preview-textcolor;
               font-size: 1.2rem;
               &__preview {
                  display: flex;
@@ -389,6 +410,7 @@ export default {
             position: absolute;
             bottom: 0;
             right: 0;
+            z-index: 888;
             width: calc( 100% - 10px );
             height: calc( 50% - 5px );
             &__item1 {
@@ -396,13 +418,13 @@ export default {
                 display: block;
                 width: 100%;
                 height: 100%;
-                background-color: gray;
+                background-color: $preview-bgcolor;
 
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                color: white;
+                color: $preview-textcolor;
                 font-size: 1.2rem;
                 &__preview {
                   display: flex;
@@ -423,13 +445,13 @@ export default {
                 display: block;
                 width: 100%;
                 height: 100%;
-                background-color: gray;
+                background-color: $preview-bgcolor;
 
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                color: white;
+                color: $preview-textcolor;
                 font-size: 1.2rem;
                 &__preview {
                   display: flex;
@@ -450,13 +472,13 @@ export default {
                 display: block;
                 width: 100%;
                 height: 100%;
-                background-color: gray;
+                background-color: $preview-bgcolor;
 
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                color: white;
+                color: $preview-textcolor;
                 font-size: 1.2rem;
                 &__preview {
                   display: flex;
@@ -479,6 +501,7 @@ export default {
         position: absolute;
         bottom: 10px;
         width: 100%;
+        z-index: 0;
         text-align: center;
       }
     }
@@ -495,8 +518,9 @@ export default {
   }
   &__editarea {
     padding: 10px;
-    border: 1px solid gray;
+    border: 1px solid $border;
     border-radius: 0.25rem;
+    background-color: $editable-hoverbgcolor;
     &>h2 {
       margin: 0;
       padding: 0;
@@ -504,10 +528,12 @@ export default {
   }
 }
 .editableitem {
-  background-color: red;
+  color: $editable-textcolor;
+  background-color: $editable-bgcolor;
 }
 .editableitem:hover {
-  color: red;
+  color: $editable-hovertextcolor;
+  font-weight: bold;
 }
 .editableitem:hover:before {
   display: flex;
@@ -522,8 +548,8 @@ export default {
   width: 100%;
   height: 100%;
   content: '編集する';
-  color: red;
-  background-color: white;
+  color: $editable-hovertextcolor;
+  background-color: $editable-hoverbgcolor;
   opacity: 0.7;
 }
 </style>

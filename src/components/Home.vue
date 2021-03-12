@@ -1,7 +1,5 @@
 <template>
   <div class="home">
-    <!--<h1>画像作成ページ</h1>-->
-    <button v-on:click="openNewMakingImageForm">next</button>
     <modal name="previewtweetimg-modal">
       <div>
         <div class="home__previewtweetimg-modal__imgswrapper">
@@ -10,10 +8,10 @@
         <div><button v-on:click="onClickSaveImgButton">ツイートせずに保存して終了</button><button class="active" v-on:click="onClickTweetButton">{{profile.twitterDisplayName}}(@{{profile.twitterScreenName}})でツイート</button></div>
       </div>
     </modal>
-    <MakeingImageForm imageFormId="0" ref="mif-0" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
-    <MakeingImageForm imageFormId="1" ref="mif-1" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
-    <MakeingImageForm imageFormId="2" ref="mif-2" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
-    <MakeingImageForm imageFormId="3" ref="mif-3" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
+    <MakeingImageForm imageFormId="0" ref="mif-0" :genedImgUrls="imgUrls" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
+    <MakeingImageForm imageFormId="1" ref="mif-1" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
+    <MakeingImageForm imageFormId="2" ref="mif-2" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
+    <MakeingImageForm imageFormId="3" ref="mif-3" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
   </div>
 </template>
 

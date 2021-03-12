@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     好きなモノまとめメーカーとは...
-    <button v-on:click="onClickTwitterSigninButton">Twitterでサインイン</button>
+    <div><button class="twitter" v-on:click="onClickTwitterSigninButton"><i class="fab fa-twitter"></i> Twitterでサインイン</button></div>
   </div>
 </template>
 

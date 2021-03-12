@@ -4,24 +4,25 @@
       <h2>{{title}}</h2>
     </div>
     <div class="forms__area">
-      <h3>title</h3>
+      <h3>タイトル</h3>
       <input type="text" v-model="itemName">
     </div>
     <div class="forms__area">
-      <h3>Image</h3>
-      <div v-show="itemThumbnail!=null">
-        <img :src="itemThumbnail" style="max-width: 300px;">
-      </div>
-      <div v-show="imgUploadProportion!=null">
-        <p>{{imgUploadProportion}}</p>
-      </div>
-      <div>
-        <div><input type="file" name="file" ref="file"></div>
-        <div><button v-on:click="onClickUploadImg">画像をアップロード</button></div>
+      <h3>画像</h3>
+      <div style="display: flex;align-items: center;">
+        <div style="display:inline-block;" v-show="itemThumbnail!=null">
+          <img :src="itemThumbnail" style="max-width: 300px;">
+        </div>
+        <div style="display:inline-block;" v-show="imgUploadProportion!=null">
+          <p>{{imgUploadProportion}}</p>
+        </div>
+        <div style="margin-left: 5px;display:inline-block;">
+          <div><input type="file" name="file" ref="file" @change="onClickUploadImg"></div>
+        </div>
       </div>
     </div>
     <div class="forms__area" v-show="isDispDiscription">
-      <h3>Description</h3>
+      <h3>説明</h3>
       <textarea v-model="itemDescription"></textarea>
     </div>
     <div class="forms__area">
@@ -116,11 +117,9 @@ h2, h3 {
 }
 .forms {
   margin-top: 5px;
-  padding: 10px;
-  border: 1px solid gray;
-  border-radius: 0.25rem;
+  padding: 5px;
   &__area {
-    margin-top: 10px;
+    margin-top: 5px;
   }
 }
 </style>
