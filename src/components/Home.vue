@@ -2,7 +2,7 @@
   <div class="home">
     <modal name="previewtweetimg-modal">
       <div>
-        <div class="home__previewtweetimg-modal__imgswrapper">
+        <div class="home__previewtweetimg-modal__imgswrapper"  v-bind:class="{ gridColumns: imgUrls.length>1 }">
           <div v-for="imgUrl in this.imgUrls"><img :src="imgUrl"></div>
         </div>
         <div><button v-on:click="onClickSaveImgButton">ツイートせずに保存して終了</button><button class="active" v-on:click="onClickTweetButton">{{profile.twitterDisplayName}}(@{{profile.twitterScreenName}})でツイート</button></div>
@@ -33,18 +33,16 @@ export default {
       MU: null,
       imgUrlsObj: {},
       imgUrls: [],
-      dispMakingImageFormId: 0
+      dispMakingImageFormId: 0,
       //imgUrls: ["https://tsumugu.tech/gen_shareimg/tmp/imgs/img_6049bc00f0cae7.02140448.png", "https://tsumugu.tech/gen_shareimg/tmp/imgs/img_6049bc00f0cae7.02140448.png", "https://tsumugu.tech/gen_shareimg/tmp/imgs/img_6049bc00f0cae7.02140448.png", "https://tsumugu.tech/gen_shareimg/tmp/imgs/img_6049bc00f0cae7.02140448.png"]
     }
   },
   methods: {
     onChangeImageUrl(value) {
       this.imgUrlsObj[value.imageFormId] = value.imgUrl
-      console.log(this.imgUrlsObj)
       this.imgUrls = Object.keys(this.imgUrlsObj).map(k=>{
         return this.imgUrlsObj[k]
       }).filter(Boolean)
-      console.log(this.imgUrlsObj, this.imgUrls)
     },
     openPreviewTweetImgModal() {
       this.$modal.push('previewtweetimg-modal')
@@ -108,12 +106,11 @@ export default {
     &__imgswrapper {
       margin: 5px;
       display:grid;
-      grid-template-columns: 1fr 1fr;
       grid-row: auto auto;
       grid-column-gap: 10px;
       grid-row-gap: 10px;
       width:100%;
-      height:90%;
+      /*height:90%;*/
       &>div {
         &>img {
           width: 100%;
@@ -122,5 +119,8 @@ export default {
       }
     }
   }
+}
+.gridColumns {
+  grid-template-columns: 1fr 1fr;
 }
 </style>

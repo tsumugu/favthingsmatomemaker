@@ -105,7 +105,7 @@ export default {
   name: 'MakeingImageForm',
   props: {
     imageFormId: null,
-    genedImgUrls: []
+    genedImgUrls: null
   },
   data: function () {
     return {
@@ -300,7 +300,7 @@ export default {
     }
   },
   mounted() {
-    this.MU = new MyUtil()      
+    this.MU = new MyUtil()   
   }
 }
 </script>
