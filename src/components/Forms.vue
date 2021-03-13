@@ -1,5 +1,11 @@
 <template>
   <div class="forms">
+    <modal name="previewsearchimg-modal">
+      <div>
+        <input type="text" v-model="searchQuery"><button v-on:click="onClickSearchImg">検索</button>
+        <vue-select-image :dataImages="dataImages" @onselectimage="onSelectImage"></vue-select-image>
+      </div>
+    </modal>
     <div class="forms__area">
       <h2>{{title}}</h2>
     </div>
@@ -20,6 +26,7 @@
           <div><input type="file" name="file" ref="file" @change="onClickUploadImg"></div>
         </div>
       </div>
+      <div><button v-on:click="$modal.push('previewsearchimg-modal')">Google画像検索の結果で設定</button></div>
     </div>
     <div class="forms__area" v-show="isDispDiscription">
       <h3>説明</h3>
@@ -49,12 +56,17 @@ export default {
       itemThumbnail: "https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png",
       //itemThumbnail: null,
       itemDescription: null,
-      imgUploadProportion: null
+      imgUploadProportion: null,
+      searchQuery: null,
+      dataImages: []
     }
   },
   watch: {
     propsItems() {
       this.loadPropsItems()
+    },
+    itemName() {
+      this.searchQuery = this.itemName
     }
   },
   methods: {
@@ -65,6 +77,28 @@ export default {
         "itemThumbnail": this.itemThumbnail,
         "ItemDescription": this.itemDescription,
         "isEdited": (this.propsItems!=null)
+      })
+    },
+    onSelectImage(data) {
+      this.itemThumbnail = data.src
+      this.$modal.pop('previewsearchimg-modal')
+    },
+    onClickSearchImg() {
+      var url = "https://tsumugu.tech/gen_shareimg/searchimg.php?q="+this.searchQuery
+      axios.get(url).then(res=>{
+        if (Array.isArray(res.data)) {
+          this.dataImages = res.data.map((e, index)=>{
+            return {
+              id: index,
+              src: e
+            }
+          })
+        } else {
+          this.$dialog.alert("検索結果が0件でした", {okText: 'OK'})
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$dialog.alert("検索でエラーが発生しました", {okText: 'OK'})
       })
     },
     onClickUploadImg() {
@@ -85,7 +119,7 @@ export default {
       .then(response=>{
         this.imgUploadProportion = null
         if (response.data.error!=undefined) {
-          alert("画像のアップロードに失敗しました")
+          this.$dialog.alert("画像のアップロードに失敗しました", {okText: 'OK'})
         } else {
           this.itemThumbnail = response.data.imgurl
         }
@@ -93,7 +127,7 @@ export default {
       .catch(error=>{
         this.imgUploadProportion = null
         console.log(error)
-        alert("画像のアップロードに失敗しました")
+        this.$dialog.alert("画像のアップロードに失敗しました", {okText: 'OK'})
       })
     },
     loadPropsItems() {
@@ -121,5 +155,12 @@ h2, h3 {
   &__area {
     margin-top: 5px;
   }
+}
+</style>
+<style>
+.vue-select-image__wrapper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 5px;
 }
 </style>

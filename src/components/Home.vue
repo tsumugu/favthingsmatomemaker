@@ -5,7 +5,7 @@
         <div class="home__previewtweetimg-modal__imgswrapper"  v-bind:class="{ gridColumns: imgUrls.length>1 }">
           <div v-for="imgUrl in this.imgUrls"><img :src="imgUrl"></div>
         </div>
-        <div><button v-on:click="onClickSaveImgButton">ツイートせずに保存して終了</button><button class="active" v-on:click="onClickTweetButton">{{profile.twitterDisplayName}}(@{{profile.twitterScreenName}})でツイート</button></div>
+        <div><!--<button v-on:click="onClickSaveImgButton">ツイートせずに保存して終了</button>--><button class="active" v-on:click="onClickTweetButton">{{profile.twitterDisplayName}}(@{{profile.twitterScreenName}})でツイート</button></div>
       </div>
     </modal>
     <MakeingImageForm imageFormId="0" ref="mif-0" :genedImgUrls="imgUrls" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
@@ -73,7 +73,8 @@ export default {
     },
     onClickTweetButton() {
       if (this.imgUrls.length == 0) {
-        alert("ツイートするには画像を生成してください")
+        //alert("ツイートするには画像を生成してください")
+        this.$dialog.alert('ツイートするには画像を生成してください', {okText: 'OK'})
         return false
       }
       axios.post('https://tsumugu.tech/gen_shareimg/tweetimages.php', {
@@ -84,12 +85,14 @@ export default {
         console.log(res)
         this.$modal.pop('previewtweetimg-modal')
         if (!this.MU.isAllValueNotEmpty([res.data.errors])) {
-          alert("ツイートしました")
-          // リロードなど初期化処理
-          location.reload()
+          //alert("ツイートしました")
+          this.$dialog.alert('ツイートしました', {okText: 'OK'}).then(function(dialog) {
+            // リロードなど初期化処理
+            location.reload()
+          })
         } else {
           this.onClickSaveImgButton()
-          alert("ツイートに失敗しました")
+          this.$dialog.alert('ツイートに失敗しました', {okText: 'OK'})
         }
       })
     }

@@ -9,6 +9,8 @@ import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import VueLoading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import 'animate.css/animate.min.css'
+import VueSelectImage from 'vue-select-image'
+import 'vue-select-image/dist/vue-select-image.css'
 
 import './assets/style/button.scss'
 import './assets/fontawesome-5.15.2/js/all.min.js'
@@ -36,7 +38,9 @@ Vue.config.productionTip = false
 Vue.use(VueThinModal)
 Vue.use(VuejsDialog)
 Vue.use(VueLoading)
+Vue.use(VueSelectImage)
 Vue.component('loading', VueLoading)
+Vue.component('vue-select-image', VueSelectImage)
 new Vue({
   router,
   render: h => h(App)

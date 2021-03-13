@@ -180,12 +180,12 @@ export default {
       //valのチェック
       if (values.formId == 'title') {
         if (!this.MU.isAllValueNotEmpty([this.matomeTitle])) {
-          alert("タイトルを入力してください")
+          this.$dialog.alert("タイトルを入力してください", {okText: 'OK'})
           return false
         }
       } else {
         if (!this.MU.isAllValueNotEmpty([values.itemName, values.itemThumbnail])) {
-          alert("アイテムのタイトルと画像は必須項目です")
+          this.$dialog.alert("アイテムのタイトルと画像は必須項目です", {okText: 'OK'})
           return false
         }
       }
@@ -243,13 +243,13 @@ export default {
     },
     convertItemToPostObj(e) {
       if (!this.MU.isAllValueNotEmpty([e])) {
-        alert("入力してください")
+        this.$dialog.alert("入力してください", {okText: 'OK'})
         return false
       }
       var title = e.title
       // titleのnullチェック
       if (!this.MU.isAllValueNotEmpty([title])) {
-        alert("タイトルを入力してください")
+        this.$dialog.alert("タイトルを入力してください", {okText: 'OK'})
         return false
       }
       var items = Object.keys(e.items).map(l=>{
@@ -264,7 +264,7 @@ export default {
       }).filter(Boolean)
       // タイトルとサムネが入力されていない場合mapで弾かれるので、処理前後で配列の要素数を比較することで正しく入力されているかを確認できる
       if (Object.keys(e.items).length != items.length) {
-        alert("アイテムのタイトルと画像は必須項目です")
+        this.$dialog.alert("タイトルまたは画像が設定されていません。", {okText: 'OK'})
         return false
       }
       var resItems = {}

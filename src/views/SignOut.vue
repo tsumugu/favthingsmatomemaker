@@ -14,7 +14,7 @@ export default {
         this.$router.push({path:'/'})
       })
       .catch(error => {
-        alert(error)
+        this.$dialog.alert(error, {okText: 'OK'})
         this.$router.push({path:'/'})
       })
     }
