@@ -24,9 +24,10 @@
         </div>
         <div style="margin-left: 5px;display:inline-block;">
           <div><input type="file" name="file" ref="file" @change="onClickUploadImg"></div>
+          <div style="margin: 5px 0 5px 0">または</div>
+          <div><button v-on:click="$modal.push('previewsearchimg-modal')">Google画像検索の結果で設定</button></div>
         </div>
       </div>
-      <div><button v-on:click="$modal.push('previewsearchimg-modal')">Google画像検索の結果で設定</button></div>
     </div>
     <div class="forms__area" v-show="isDispDiscription">
       <h3>説明</h3>

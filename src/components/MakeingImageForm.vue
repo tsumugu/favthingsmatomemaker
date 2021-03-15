@@ -1,5 +1,8 @@
 <template>
   <div class="MakeingImageForm">
+    {{imageFormId}}
+    <button v-on:click="genImgDebug('1')">debug1</button>
+    <button v-on:click="genImgDebug('2')">debug2</button>
     <loading :active.sync="isLoading" :can-cancel="false" :is-full-page="true" />
     <div>最大4枚のうち{{this.imgUrlsCount+1}}枚目を作成中</div>
     <div class="MakeingImageForm__preview__wrapper" v-show="imgUrl==null">
@@ -53,6 +56,13 @@
         </div>
       </div>
       <div class="MakeingImageForm__preview__wrapper__credit"><img src="https://tsumugu.tech/gen_shareimg/logo.png" style="margin: 0;padding: 0;width: 300px;"></div>
+    </div>
+    <div>
+      <div class="MakeingImageForm__previewImage">
+        {{imageFormId}}
+        <img :src="imgUrl">
+        <div style="margin-top: 10px;"><button v-on:click="dispPreviewArea()" style="margin-right: 10px;">修正する</button><button class="active" v-on:click="()=>{$modal.pop('previewimage-modal');openAskDialog();}">これでOK</button></div>
+      </div>
     </div>
     <modal name="previewimage-modal">
       <div class="MakeingImageForm__previewImage">
@@ -121,7 +131,8 @@ export default {
       imgUrlsCount: 0,
       nokoriimgCount: 4,
       isDisableGenImgButton: true,
-      isLoading: false
+      isLoading: false,
+      imageFormIdData: null
     }
   },
   components: {
@@ -278,8 +289,35 @@ export default {
       
       return postObj
     },
-    onGenImg() {
-      var postObj = this.convertItemToPostObj(this.item)
+    /*
+    debugFunc() {
+      this.imgUrl = "https://tsumugu.tech/gen_shareimg/tmp/imgs/img_6049bc00f0cae7.02140448.png"
+      this.$modal.push('previewimage-modal')
+      setTimeout(()=>{
+        this.$modal.pop('previewimage-modal')
+        this.isLoading = true
+        new Promise(resolve=>{
+          setTimeout(()=>{
+            resolve("https://tsumugu.tech/gen_shareimg/tmp/imgs/img_604f0e09325d99.46039879.png")
+          }, 1000)
+        }).then(url=>{
+          this.imgUrl = url
+          this.isLoading = false
+          this.$modal.push('previewimage-modal')
+        })
+      }, 1000)
+    },
+    */
+    genImgDebug(n) {
+      var jsonStr1 = '{"title":"a","items":{"top":{"title":"a","description":"a","thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},"other":[{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"}]}}'
+      var jsonStr2 = '{"title":"b","items":{"top":{"title":"b","description":"b","thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},"other":[{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"}]}}'
+      var jsonStr = null
+      if (n=="1") {
+        jsonStr = jsonStr1
+      } else {
+        jsonStr = jsonStr2
+      }
+      var postObj = JSON.parse(jsonStr)
       if (postObj) {
         this.isLoading = true
         this.postGenImgAPI(postObj).then(response=>{
@@ -293,6 +331,29 @@ export default {
           this.$modal.push('previewimage-modal')
         })
         .catch((error) => {
+          this.$dialog.alert("画像の生成に失敗しました", {okText: 'OK'})
+          console.log(error)
+          this.isLoading = false
+        })
+      }
+    },
+    onGenImg() {
+      var postObj = this.convertItemToPostObj(this.item)
+      if (postObj) {
+        this.isLoading = true
+        console.log(JSON.stringify(postObj))
+        this.postGenImgAPI(postObj).then(response=>{
+          this.imgUrl = response.data
+          this.$emit('onChangeImageUrl', {
+            "imageFormId": this.imageFormId,
+            "imgUrl": this.imgUrl
+          })
+          // プレビューダイアログを出す
+          this.isLoading = false
+          this.$modal.push('previewimage-modal')
+        })
+        .catch((error) => {
+          this.$dialog.alert("画像の生成に失敗しました", {okText: 'OK'})
           console.log(error)
           this.isLoading = false
         })
@@ -300,16 +361,17 @@ export default {
     }
   },
   mounted() {
-    this.MU = new MyUtil()   
+    this.MU = new MyUtil()
   }
 }
 </script>
 
 <style scoped lang="scss">
 .MakeingImageForm {
-  margin: 0 auto;
+  margin: 0;
   padding: 40px;
-  max-width: 650px;
+  display: inline-block;
+  /*max-width: 650px;*/
   background-color: $app-bgcolor-light;
   border-radius: 0.25rem;
   border: 1px solid $border;
@@ -525,6 +587,11 @@ export default {
       margin: 0;
       padding: 0;
     }
+  }
+}
+@media screen and (max-width:600px) {
+  .MakeingImageForm {
+    width: 100%;
   }
 }
 .editableitem {

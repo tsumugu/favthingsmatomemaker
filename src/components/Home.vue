@@ -11,8 +11,7 @@
     <MakeingImageForm imageFormId="0" ref="mif-0" :genedImgUrls="imgUrls" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
     <MakeingImageForm imageFormId="1" ref="mif-1" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
     <MakeingImageForm imageFormId="2" ref="mif-2" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
-    <MakeingImageForm imageFormId="3" ref="mif-3" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />
-  </div>
+    <MakeingImageForm imageFormId="3" ref="mif-3" :genedImgUrls="imgUrls" style="display:none;" @onChangeImageUrl="onChangeImageUrl" @openPreviewTweetImgModal="openPreviewTweetImgModal" @openNewMakingImageForm="openNewMakingImageForm" />   </div>
 </template>
 
 <script>
@@ -105,6 +104,10 @@ export default {
 
 <style scoped lang="scss">
 .home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   &__previewtweetimg-modal {
     &__imgswrapper {
       margin: 5px;

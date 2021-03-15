@@ -12,7 +12,6 @@ html, body {
   height: 100%;
 }
 #app {
-  padding: 10px;
   width: 100%;
   min-height: 100%;
   font-family: 'M PLUS 1p', sans-serif;
@@ -20,5 +19,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   color: $app-textcolor;
   background-color: $app-bgcolor;
+}
+@media (min-width: 600px) {
+  #app {
+    padding: 10px;
+  }
 }
 </style>

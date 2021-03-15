@@ -263,4 +263,9 @@ p {
     }
   }
 }
+@media screen and (max-width:600px) {
+  .about {
+    padding: 10px;
+  }
+}
 </style>
