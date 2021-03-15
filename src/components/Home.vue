@@ -81,7 +81,7 @@ export default {
         "twitterSecret": this.profile.twitterSecret,
         "imgUrls": this.imgUrls
       }).then(res=>{
-        console.log(res)
+        //console.log(res)
         this.$modal.pop('previewtweetimg-modal')
         if (!this.MU.isAllValueNotEmpty([res.data.errors])) {
           //alert("ツイートしました")

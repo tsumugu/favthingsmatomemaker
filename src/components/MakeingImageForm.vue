@@ -1,8 +1,10 @@
 <template>
   <div class="MakeingImageForm">
+    <!--
     {{imageFormId}}
     <button v-on:click="genImgDebug('1')">debug1</button>
     <button v-on:click="genImgDebug('2')">debug2</button>
+    -->
     <loading :active.sync="isLoading" :can-cancel="false" :is-full-page="true" />
     <div>最大4枚のうち{{this.imgUrlsCount+1}}枚目を作成中</div>
     <div class="MakeingImageForm__preview__wrapper" v-show="imgUrl==null">
@@ -57,16 +59,9 @@
       </div>
       <div class="MakeingImageForm__preview__wrapper__credit"><img src="https://tsumugu.tech/gen_shareimg/logo.png" style="margin: 0;padding: 0;width: 300px;"></div>
     </div>
-    <div>
-      <div class="MakeingImageForm__previewImage">
-        {{imageFormId}}
-        <img :src="imgUrl">
-        <div style="margin-top: 10px;"><button v-on:click="dispPreviewArea()" style="margin-right: 10px;">修正する</button><button class="active" v-on:click="()=>{$modal.pop('previewimage-modal');openAskDialog();}">これでOK</button></div>
-      </div>
-    </div>
     <modal name="previewimage-modal">
       <div class="MakeingImageForm__previewImage">
-        <img :src="imgUrl">
+        <img :src="genedImgUrls.slice().reverse()[0]">
         <div style="margin-top: 10px;"><button v-on:click="dispPreviewArea()" style="margin-right: 10px;">修正する</button><button class="active" v-on:click="()=>{$modal.pop('previewimage-modal');openAskDialog();}">これでOK</button></div>
       </div>
     </modal>
@@ -147,9 +142,6 @@ export default {
     }
   },
   methods: {
-    whenCancelled() {
-        console.log("User cancelled the loader.")
-      },
     dispPreviewArea() {
       this.imgUrl = null
       this.$modal.pop('previewimage-modal')
@@ -238,7 +230,7 @@ export default {
         this.$modal.pop('edititem-modal')
       }
       this.onChangeValue()
-      console.log(this.postData)
+      //console.log(this.postData)
     },
     onChangeValue() {
       this.item = {
@@ -307,7 +299,6 @@ export default {
         })
       }, 1000)
     },
-    */
     genImgDebug(n) {
       var jsonStr1 = '{"title":"a","items":{"top":{"title":"a","description":"a","thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},"other":[{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"a","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"}]}}'
       var jsonStr2 = '{"title":"b","items":{"top":{"title":"b","description":"b","thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},"other":[{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"},{"title":"b","description":null,"thumbnail":"https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png"}]}}'
@@ -337,11 +328,12 @@ export default {
         })
       }
     },
+    */
     onGenImg() {
       var postObj = this.convertItemToPostObj(this.item)
       if (postObj) {
         this.isLoading = true
-        console.log(JSON.stringify(postObj))
+        //console.log(JSON.stringify(postObj))
         this.postGenImgAPI(postObj).then(response=>{
           this.imgUrl = response.data
           this.$emit('onChangeImageUrl', {
