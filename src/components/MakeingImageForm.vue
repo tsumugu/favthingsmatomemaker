@@ -137,7 +137,7 @@ export default {
     genedImgUrls() {
       if (this.MU.isAllValueNotEmpty([this.genedImgUrls])) {
         this.imgUrlsCount = this.genedImgUrls.length
-        this.nokoriimgCount = this.nokoriimgCount - this.imgUrlsCount
+        this.nokoriimgCount = 4 - this.imgUrlsCount
       }
     }
   },

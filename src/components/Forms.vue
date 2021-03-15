@@ -54,8 +54,8 @@ export default {
   data: function () {
     return {
       itemName: null,
-      itemThumbnail: "https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png",
-      //itemThumbnail: null,
+      //itemThumbnail: "https://tsumugu.tech/gen_shareimg/tmp/uploads/uploads_604377124a3e2.png",
+      itemThumbnail: null,
       itemDescription: null,
       imgUploadProportion: null,
       searchQuery: null,
